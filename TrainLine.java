@@ -99,7 +99,7 @@ public class TrainLine {
 	}
 
 	public int getSize() {
-
+ggg
 		// YOUR CODE GOES HERE
 		return 0; // change this!
 	}
