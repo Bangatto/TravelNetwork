@@ -99,9 +99,14 @@ public class TrainLine {
 	}
 
 	public int getSize() {
-ggg
-		// YOUR CODE GOES HERE
-		return 0; // change this!
+		//want to know how many stations are in the array of TrainStations
+		TrainStation currStation = this.leftTerminus;
+		int size = 0;
+		do { size++;
+		currStation=currStation.getRight();
+		}while(currStation !=null);
+		
+		return size;
 	}
 
 	public void reverseDirection() {
@@ -124,9 +129,21 @@ ggg
 
 	// You can modify the header to this method to handle an exception. You cannot make any other change to the header.
 	public TrainStation findStation(String name) {
-
-		// YOUR CODE GOES HERE
-		return null; // change this!
+		//check whether the station given is this.station.
+		TrainStation currStation = this.leftTerminus;
+		TrainStation end = this.rightTerminus;
+		while (!currStation.equals(end)) {
+			if(currStation.getName().equals(name)) {
+				return currStation;
+			}
+			currStation = currStation.getRight();
+		}
+		if(currStation.equals(name)) {
+			return currStation;
+		}else {
+			throw new StationNotFoundException("This station is not on this line");
+		}
+		
 	}
 
 	public void sortLine() {
