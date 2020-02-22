@@ -102,11 +102,12 @@ public class TrainLine {
 		//want to know how many stations are in the array of TrainStations
 		TrainStation currStation = this.leftTerminus;
 		int size = 0;
-		do { size++;
-		currStation=currStation.getRight();
-		}while(currStation !=null);
+		while(currStation !=this.rightTerminus) {
+			size++;
+			currStation=currStation.getRight();
+		}
 		
-		return size;
+		return size+1;
 	}
 
 	public void reverseDirection() {
@@ -116,15 +117,26 @@ public class TrainLine {
 	// You can modify the header to this method to handle an exception. You cannot make any other change to the header.
 	public TrainStation travelOneStation(TrainStation current, TrainStation previous) {
 
-		// YOUR CODE GOES HERE
-		return null; // change this!
+		return null; 
 	}
 
 	// You can modify the header to this method to handle an exception. You cannot make any other change to the header.
 	public TrainStation getNext(TrainStation station) {
-
-		// YOUR CODE GOES HERE
-		return null; // change this!
+		//call find station to handle the execption
+		findStation(station.getName());
+		if(!this.goingRight) {
+			if(this.leftTerminus==station) {
+				return station.getRight();
+			}else {
+				return station.getLeft();
+			}
+		}else {
+			if(this.rightTerminus==station) {
+				return station.getLeft();
+			}else {
+				return station.getRight();
+			}
+		}
 	}
 
 	// You can modify the header to this method to handle an exception. You cannot make any other change to the header.
@@ -132,13 +144,13 @@ public class TrainLine {
 		//check whether the station given is this.station.
 		TrainStation currStation = this.leftTerminus;
 		TrainStation end = this.rightTerminus;
-		while (!currStation.equals(end)) {
+		while (currStation != end) {
 			if(currStation.getName().equals(name)) {
 				return currStation;
 			}
 			currStation = currStation.getRight();
 		}
-		if(currStation.equals(name)) {
+		if(currStation.getName().equals(name)) {
 			return currStation;
 		}else {
 			throw new StationNotFoundException("This station is not on this line");
