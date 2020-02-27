@@ -102,12 +102,11 @@ public class TrainLine {
 		//want to know how many stations are in the array of TrainStations
 		TrainStation currStation = this.leftTerminus;
 		int size = 0;
-		while(currStation !=this.rightTerminus) {
+		while(currStation !=null) {
 			size++;
 			currStation=currStation.getRight();
 		}
-		
-		return size+1;
+		return size;
 	}
 
 	public void reverseDirection() {
@@ -116,22 +115,37 @@ public class TrainLine {
 
 	// You can modify the header to this method to handle an exception. You cannot make any other change to the header.
 	public TrainStation travelOneStation(TrainStation current, TrainStation previous) {
-
-		return null; 
+		//check if current station is in this line
+		if(current.getLine() != this) {
+			throw new StationNotFoundException("Station not on this line");
+		}
+		if(!current.hasConnection) {
+			return this.getNext(current);
+		}
+		TrainStation nextStation = current.getTransferStation();
+		TrainLine nextLine = current.getTransferLine();
+		if(nextStation==previous) {
+			return this.getNext(current);
+		}
+		return nextStation;
 	}
 
 	// You can modify the header to this method to handle an exception. You cannot make any other change to the header.
 	public TrainStation getNext(TrainStation station) {
-		//call find station to handle the execption
+		//call find station to handle the exception
 		findStation(station.getName());
 		if(!this.goingRight) {
 			if(this.leftTerminus==station) {
+				this.reverseDirection();
+				
 				return station.getRight();
 			}else {
 				return station.getLeft();
 			}
 		}else {
 			if(this.rightTerminus==station) {
+				
+				this.reverseDirection();
 				return station.getLeft();
 			}else {
 				return station.getRight();
@@ -159,19 +173,56 @@ public class TrainLine {
 	}
 
 	public void sortLine() {
+		TrainStation[] trainStations = getLineArray();
+		int size  = getSize();
+		for(int i=0; i < size; i++) {
+			for(int j=i+1; j < size; j++) {
+				if(trainStations[i].getName().compareTo(trainStations[j].getName()) > 0){
+					TrainStation temp=trainStations[j];
+					trainStations[j]=trainStations[i];
+					trainStations[i]=temp;
+				}
+			
+			}
+		}
+		//update line map
+		this.lineMap = trainStations;
+		for(int i=0; i < size; i++) {
+			//check whether it is the first station
+			if(i ==0) {
+				trainStations[0].setLeft(null);
+				trainStations[0].setRight(trainStations[1]);
+				trainStations[0].setLeftTerminal();
+				this.leftTerminus=trainStations[0];
+				//check whether it is the last station
+			} else if(i==size-1) {
+				trainStations[i].setRight(null);
+				trainStations[i].setLeft(trainStations[i-1]);
+				trainStations[i].setRightTerminal();
+				this.rightTerminus=trainStations[i];
+			}else {
+				trainStations[i].setNonTerminal();
+				trainStations[i].setRight(trainStations[i+1]);
+				trainStations[i].setLeft(trainStations[i-1]);
+			}
+		}
 
-		// YOUR CODE GOES HERE
 	}
-
+	
 	public TrainStation[] getLineArray() {
-
-		// YOUR CODE GOES HERE
-		return null; // change this
+		int size = getSize();
+		TrainStation[] trainArr =new TrainStation[size];
+		TrainStation current = this.leftTerminus;
+		for(int index=0; index <size ; index++) {
+			trainArr[index]=current;
+			current = current.getRight();
+		}
+		return trainArr;
 	}
 
 	private TrainStation[] shuffleArray(TrainStation[] array) {
 		Random rand = new Random();
-
+		rand.setSeed(11);
 		for (int i = 0; i < array.length; i++) {
 			int randomIndexToSwap = rand.nextInt(array.length);
 			TrainStation temp = array[randomIndexToSwap];
@@ -187,9 +238,26 @@ public class TrainLine {
 		// you are given a shuffled array of trainStations to start with
 		TrainStation[] lineArray = this.getLineArray();
 		TrainStation[] shuffledArray = shuffleArray(lineArray);
-
-		// YOUR CODE GOES HERE
-
+		int size =  getSize();
+		for(int i=0; i < size; i++) {
+			if(i ==0) {
+				shuffledArray[0].setLeft(null);
+				shuffledArray[0].setRight(shuffledArray[1]);
+				shuffledArray[0].setNonTerminal();
+				shuffledArray[0].setLeftTerminal();
+				this.leftTerminus=shuffledArray[0];
+			} else if(i==size-1) {
+				shuffledArray[i].setRight(null);
+				shuffledArray[i].setLeft(shuffledArray[i-1]);
+				shuffledArray[i].setNonTerminal();
+				shuffledArray[i].setRightTerminal();
+				this.rightTerminus=shuffledArray[i];
+			}else {
+				shuffledArray[i].setNonTerminal();
+				shuffledArray[i].setRight(shuffledArray[i+1]);
+				shuffledArray[i].setLeft(shuffledArray[i-1]);
+			}
+		}
 	}
 
 	public String toString() {
